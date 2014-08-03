@@ -11,6 +11,8 @@ hs_err_pid*
 
 ### Eclipse ###
 *.pydevproject
+.project
+.classpath
 .metadata
 .gradle
 bin/
