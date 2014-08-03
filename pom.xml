@@ -1,0 +1,139 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	
+	<groupId>org.xphoenix</groupId>
+	<artifactId>memory</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	
+	<packaging>pom</packaging>
+	<modules>
+		<module>memory-core</module>
+		<module>memory-mmap-java</module>
+		<module>memory-mmap-native</module>
+	</modules>
+
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>ch.qos.logback</groupId>
+				<artifactId>logback-classic</artifactId>
+				<version>1.0.13</version>
+			</dependency>
+
+			<dependency>
+				<groupId>com.intellij</groupId>
+				<artifactId>annotations</artifactId>
+				<version>5.1</version>
+			</dependency>
+
+			<dependency>
+				<groupId>com.google.protobuf</groupId>
+				<artifactId>protobuf-java</artifactId>
+				<version>2.5.0</version>
+			</dependency>
+
+			<dependency>
+				<groupId>junit</groupId>
+				<artifactId>junit</artifactId>
+				<version>4.11</version>
+				<scope>test</scope>
+			</dependency>
+
+			<!-- Benchmarks -->
+			<dependency>
+				<groupId>com.google.caliper</groupId>
+				<artifactId>caliper</artifactId>
+				<version>1.0-beta-1</version>
+				<scope>compile</scope>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+
+	<build>
+		<pluginManagement>
+			<plugins>
+				<!-- 
+				NOTE: !!!IT IS IMPORTANT TO HAVE BENCHMARKS ON VERIFY STAGE!!!
+				 
+				Remember: we want to have benchmarks report for EVERY build/release. Mostly because
+				otherwise it is hard to investigate performance issues in applications across the grid
+				
+				DO NOT turn it off unless u are know exactly that your build won't go to any 
+				"close production" environment! 
+				 -->
+				<plugin>
+					<groupId>org.atychyna</groupId>
+					<artifactId>caliper-maven-plugin</artifactId>
+					<version>1.0-SNAPSHOT</version>
+					<executions>
+						<execution>
+							<id>run-micro</id>
+							<phase>verify</phase>
+							<goals>
+								<goal>run</goal>
+							</goals>
+							<configuration>
+								<benchmarkClassesDirectory>${project.build.directory}/test-classes</benchmarkClassesDirectory>
+								<runName>${project.artifactId}-${project.version}</runName>
+								<verbose>false</verbose>
+								<instruments>
+									<instrument>micro</instrument>
+								</instruments>
+								<includes>
+									<include>**/*MicroBenchmark.java</include>
+								</includes>
+								<excludes>
+									<exclude>**/*MacroBenchmark.java</exclude>
+								</excludes>
+							</configuration>
+						</execution>
+						<execution>
+							<id>run-macro</id>
+							<phase>verify</phase>
+							<goals>
+								<goal>run</goal>
+							</goals>
+							<configuration>
+								<benchmarkClassesDirectory>${project.build.directory}/test-classes</benchmarkClassesDirectory>
+								<runName>${project.artifactId}-${project.version}</runName>
+								<verbose>false</verbose>
+								<instruments>
+									<instrument>macro</instrument>
+								</instruments>
+								<includes>
+									<include>**/*MacroBenchmark.java</include>
+								</includes>
+								<excludes>
+									<exclude>**/*MicroBenchmark.java</exclude>
+								</excludes>
+							</configuration>
+						</execution>
+						<execution>
+							<id>run</id>
+							<phase>verify</phase>
+							<goals>
+								<goal>run</goal>
+							</goals>
+							<configuration>
+								<benchmarkClassesDirectory>${project.build.directory}/test-classes</benchmarkClassesDirectory>
+								<runName>${project.artifactId}-${project.version}</runName>
+								<verbose>false</verbose>
+								<instruments>
+									<instrument>macro</instrument>
+								</instruments>
+								<includes>
+									<include>**/*Benchmark.java</include>
+								</includes>
+								<excludes>
+									<exclude>**/*MicroBenchmark.java</exclude>
+									<exclude>**/*MacroBenchmark.java</exclude>
+								</excludes>
+							</configuration>
+						</execution>
+					</executions>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+	</build>
+</project>
