@@ -34,12 +34,15 @@
 	</dependencies>
 	
 	<build>
+		<!--
+		TODO: Seems that caliper is not needed amymore and I have no any desire to port
+		internal caliper support tools. 
 		<plugins>
 			<plugin>
 				<groupId>org.atychyna</groupId>
 				<artifactId>caliper-maven-plugin</artifactId>
 			</plugin>
-		</plugins>
+		</plugins>  -->
 	</build>
 
 </project>
